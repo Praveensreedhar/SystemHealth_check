@@ -1,0 +1,78 @@
+import os
+import re
+import socket
+import subprocess, sys
+os.chdir("D:/")
+
+route_table = [elem.strip().split() for elem in os.popen("route print").read().split("Metric\n")[1].split("\n") if re.match("^[0-9]", elem.strip())]
+default_int = route_table[0]
+ip_address = default_int[3]
+default_gw = default_int[2]
+if ip_address == '127.0.0.1':
+    with open('no-connection-2.html','w') as data_file:
+        data_file.write("<h1>Internet Health Check Summary </h1>" + '\n<p style="color:red;">You are not connected to local network \nPlease check Local connectivity. Please check Ethernet cable if physical connectivity oytherwise please check your wifi modem</p>')
+    os.startfile('no-connection-2.html')
+else:
+    
+    ping_gw = subprocess.check_output("ping " + default_gw)
+    Average_gw = ping_gw.split()
+    Average_gw.reverse()
+    
+
+    ch = str(Average_gw[0])
+    av_lgw = ch[2]+ch[3]+ch[4]+ch[5]
+
+    
+
+    with open('Health_Check.html','w') as data_file:
+        data_file.write("<h1>Internet Health Check Summary </h1>" + "\n<p>1. Current IP ADDREES :" + ip_address + "</p>" + "\n<p>2. Default-gateway  :" + default_gw + "</p>")
+
+    with open('Health_Check.html','a') as data_file:
+        data_file.write("\n<p>3. Average Latency to Gateway :" + av_lgw + "</p>")
+
+    wifi = subprocess.check_output("Netsh wlan show interface")
+    wifi_str_split = wifi.split()
+    print(wifi_str_split)
+    print(wifi_str_split[9])
+    wifi_str = wifi_str_split[9]
+    wifi_str_split.reverse()
+    st = str(wifi_str_split[9])
+    print(st)
+    wifi_strength = st[2]+st[3]+st[4]+st[5]
+    print(wifi_strength)
+    if wifi_str == b'Wi-Fi':
+        with open('Health_Check.html','a') as data_file:
+            data_file.write("\n<p>4. Your wifi strenght is :" + wifi_strength + "</p>")
+    else:
+        a = 1
+
+    response = os.system("ping 8.8.8.8")
+    print(response)
+
+    if response == 0:
+        ping_google = subprocess.check_output("ping google.com")
+        
+        Average_google = ping_google.split()
+        #print(Average_google)
+        Average_google.reverse()
+        goole_ch = str(Average_google[0])
+        google_av_lt = goole_ch[2]+goole_ch[3]+goole_ch[4]+goole_ch[5]
+        
+    
+       
+        with open('Health_Check.html','a') as data_file:
+            data_file.write("\n<p>5. You are online and your latecy to google is: " + google_av_lt + "</p>" + "\n<p>6. Your DNS resolution is working good </p>")
+            data_file.write("\n<style>" + "\ntable, th, td {" + "\nborder: 1px solid black;" + "\nborder-collapse: collapse;" + "\n}" + "\nth, td {" + "\npadding: 5px;" + "\ntext-align: left;" + "\n</style>")
+            data_file.write("\nNote: Below are ideal Parameters.")
+            data_file.write('\n<table style="width:30%">' + "\n<tr>" + "\n<th>Parameter</th>" + "\n<th>Value</th>" + "\n</tr>")
+            data_file.write("\n<tr>" + "\n<td>Wired Latency</td>" + "\n<td><1ms</td>")
+            data_file.write("\n<tr>" + "\n<td>Wi-fi Latency</td>" + "\n<td><1ms</td>")
+            data_file.write("\n<tr>" + "\n<td>Latency to Google</td>" + "\n<td><50ms</td>")
+            data_file.write("\n<tr>" + "\n<td>Download Speed</td>" + "\n<td>>5Mbps</td>")
+            data_file.write("\n<tr>" + "\n<td>Upload Speed</td>" + "\n<td>>3Mbps</td>")
+            
+    else:
+        with open('Health_Check.html','a') as data_file:
+            data_file.write('\n<p style="color:red;"4. You are off line plase check Internet connectivity<\p>')
+    os.startfile('Health_Check.html')
+        
