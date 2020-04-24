@@ -1,0 +1,51 @@
+import os
+import re
+import socket
+import subprocess, sys
+os.chdir("D:/")
+
+route_table = [elem.strip().split() for elem in os.popen("route print").read().split("Metric\n")[1].split("\n") if re.match("^[0-9]", elem.strip())]
+default_int = route_table[0]
+ip_address = default_int[3]
+default_gw = default_int[2]
+if ip_address == '127.0.0.1':
+    with open('no-connection-2.html','w') as data_file:
+        data_file.write("<h1>Internet Health Check Summary </h1>" + '   \n<p style="color:red;">You are not connected to local network \nPlease check Local connectivity. Please check Ethernet cable if physical connectivity oytherwise please check your wifi modem</p>')
+    os.startfile('no-connection-2.html')
+else:
+    
+    ping_gw = subprocess.check_output("ping " + default_gw)
+    Average_gw = ping_gw.split()
+    Average_gw.reverse()
+    
+
+    ch = str(Average_gw[0])
+    av_lgw = ch[2]+ch[3]+ch[4]+ch[5]
+
+    
+
+    with open('Health_Check.html','w') as data_file:
+        data_file.write("<h1>Internet Health Check Summary </h1>" + "\n<p>1. Current IP ADDREES :" + ip_address + "</p>" + "\n<p>2. Default-gateway GATEWAY :" + default_gw + "</p>")
+
+    with open('Health_Check.html','a') as data_file:
+        data_file.write("\n<p>3. Average Latency to local GW :" + av_lgw + "</p>")
+
+    response = os.system("ping 8.8.8.8")
+
+    if response == 0:
+        ping_google = subprocess.check_output("ping google.com")
+        Average_google = ping_google.split()
+        Average_google.reverse()
+        goole_ch = str(Average_google[0])
+        google_av_lt = goole_ch[2]+goole_ch[3]+goole_ch[4]+goole_ch[5]
+        
+    
+    #google_ch =str(
+    
+        with open('Health_Check.html','a') as data_file:
+            data_file.write("\n<p>4. You are online and your latecy to google is: " + google_av_lt + "</p>" + "\n<p>5. Your DNS resolution is working good </p>")
+    else:
+        with open('Health_Check.txt','a') as data_file:
+            data_file.write("\n4. You are off line plase check Internet connectivity")
+    os.startfile('Health_Check.html')
+        
