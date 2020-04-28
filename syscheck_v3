@@ -56,13 +56,7 @@ else:
         goole_ch = str(Average_google[0])
         google_av_lt = goole_ch[2]+goole_ch[3]+goole_ch[4]+goole_ch[5]
 
-        #UST Resource Checking
-        ping_ust = subprocess.check_output("ping 203.99.40.1")
-        average_ust = ping_ust.split()
-        average_ust.reverse()
-        ust_ch = str(average_ust[0])
-        ust_av_lt = ust_ch[2]+ust_ch[3]+ust_ch[4]+ust_ch[5]
-        print(ust_av_lt)
+
     
        
         with open('Health_Check.html','a') as data_file:
